@@ -9,9 +9,17 @@ TAGS = ["food", "groceries", "rent", "bills", "entertainment"]
 
 class SubBill():
     @staticmethod
-    def fetchSubBillsByTime(db: Database, start_datetime, end_datetime):
+    def fetchSubBillsByUser(db: Database, user):
         sub_bill_collection = Collection(db, "SubBill")
         return sub_bill_collection.find({
+            "user_name": user,
+        })
+    
+    @staticmethod
+    def fetchUserSubBillsByTime(db: Database, user, start_datetime, end_datetime):
+        sub_bill_collection = Collection(db, "SubBill")
+        return sub_bill_collection.find({
+            "user_name": user,
             "creation_time": {
                 "$gte": start_datetime,
                 "$lt": end_datetime
