@@ -66,7 +66,7 @@ class SubBill():
             "masterbill_name": masterbill_name,
             "user_name":user_name,
             "creator": creator,
-            "creation_time":datetime.strptime(creation_time, '%Y-%m-%dT%H:%M:%SZ'),
+            "creation_time":datetime.now(),
             "item_list":item_list,
             "total":total,
             "analytics": {

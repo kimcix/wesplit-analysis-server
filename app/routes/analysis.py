@@ -46,7 +46,7 @@ def update_analytics():
                         "payer": document['user_name'],
                         "value": document['total'],
                         "masterbill": document['masterbill_name'],
-                        "masterBillId": document['masterbill'],
+                        "masterBillId": str(document['masterbill']),
                     })
                     # TODO: Change the routing_key below
                     channel.basic_publish(exchange='sda_mq', routing_key='subbill_payment', body=message_one)
