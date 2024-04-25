@@ -27,14 +27,20 @@ class SubBill():
         })
 
     @staticmethod
-    def updateSubBillTags(db: Database, id , tag_list):
+    def updateSubBillTags(db: Database, id , tag_list, payment):
         # Querying the document with the given ID
         sub_bill_collection = Collection(db, "SubBill")
         document = sub_bill_collection.find_one({'_id': ObjectId(id)})
         print(document)
+        print(payment)
         if document:
             # Update the desired field
-            sub_bill_collection.update_one({'_id': ObjectId(id)}, {'$set': {"analytics.tags": tag_list}})
+            sub_bill_collection.update_one({'_id': ObjectId(id)}, 
+                                           {'$set': {"analytics.tags": tag_list,
+                                                     "analytics.paid": payment["paid"],
+                                                     "analytics.payment_time": payment["payment_time"],
+                                                     "analytics.payback_interval": payment["payback_interval"]}
+                                           })
             return True
         return False
 

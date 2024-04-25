@@ -28,8 +28,8 @@ def date_query():
         return f"An error occurred: {str(e)}", 400
     
 
-@analysis_blueprint.route('/update_tags', methods=['POST'])
-def update_tags():
+@analysis_blueprint.route('/update_analytics', methods=['POST'])
+def update_analytics():
     # Check if the request contains JSON data
     if request.is_json:
         # Get the JSON data from the request
@@ -41,8 +41,7 @@ def update_tags():
 
         # Querying the document with the given ID
         
-        res = SubBill.updateSubBillTags(DATABASE, data['subBillId'], data['newTags'])
-        
+        res = SubBill.updateSubBillTags(DATABASE, data['subBillId'], data['newTags'], data['newPayment'])
         # Optionally, you can return a response to the client
         if res:
             return jsonify({"message": "Data received successfully"}), 200
@@ -78,6 +77,7 @@ def user_analysis():
 
 
         return_json = {
+            "username": subbill["user_name"],
             "sub_bill_count": subbill_count,
             "total_accumulated": total,
             "total_owed": total_owed,
