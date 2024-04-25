@@ -78,6 +78,7 @@ def user_analysis():
 
         return_json = {
             "username": subbill["user_name"],
+            "creator": subbill["creator"],
             "sub_bill_count": subbill_count,
             "total_accumulated": total,
             "total_owed": total_owed,
