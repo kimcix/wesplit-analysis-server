@@ -45,7 +45,7 @@ def update_analytics():
                         "payee": document['creator'],
                         "payer": document['user_name'],
                         "value": document['total'],
-                        "masterbill": document['masterbill_name'],
+                        "masterbill_name": document['masterbill_name'],
                         "masterBillId": str(document['masterbill']),
                     })
                     # TODO: Change the routing_key below
