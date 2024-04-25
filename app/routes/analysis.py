@@ -75,7 +75,12 @@ def user_analysis():
         total_owed = 0.0
         payback_time_avg = 0.0
         
-        for subbill in cursor:
+        # early cancel if cursor is 0
+        cursor_list = list(cursor)
+        if len(cursor_list) == 0:
+            return jsonify(None), 204
+
+        for subbill in cursor_list:
             subbill_count +=1
             total += subbill['total']
             if subbill['analytics']['paid']:

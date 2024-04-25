@@ -1,6 +1,7 @@
 import pika
 import json
 from app.models.subBillModel import *
+from app.db import DATABASE
 
 def consume():
     connection = pika.BlockingConnection(
@@ -33,7 +34,7 @@ def consume():
         """
         newSubBill = SubBill(msg['masterBillId'], msg['masterBillName'], msg['assignedTo'], msg['creator'], msg['creatAt'],[], msg['value'])
         newSubBill.setAnalytics()
-        newSubBill.insertSubBill()
+        newSubBill.insertSubBill(DATABASE)
         # publish to subscribers
 
     channel.basic_consume(
