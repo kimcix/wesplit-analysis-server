@@ -23,8 +23,10 @@ def create_app():
 
 # Start app
 if __name__ == '__main__':
-    #consumer_thread = Thread(target=consume)
-    #consumer_thread.daemon = True
-    #consumer_thread.start()
+    consumer_thread = Thread(target=consume)
+    consumer_thread.daemon = True
+    consumer_thread.start()
 
     app= create_app()
+
+    app.run(host='localhost', port=5003)
