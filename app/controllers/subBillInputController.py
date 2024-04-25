@@ -1,7 +1,11 @@
 import pika
 import json
+
+from app.controllers.subscriptionInboxController import SubInbox
 from app.models.subBillModel import *
 from app.db import DATABASE
+
+SUB_INBOX = SubInbox()
 
 def consume():
     # connection = pika.BlockingConnection(
@@ -38,7 +42,13 @@ def consume():
         newSubBill = SubBill(msg['masterBillId'], msg['masterBillName'], msg['assignedTo'], msg['creator'], msg['createAt'],[], msg['value'])
         newSubBill.setAnalytics()
         newSubBill.insertSubBill(DATABASE)
-        # publish to subscribers
+
+
+        # Publish to subscribers
+        # - Check if assignee is awaiting an update
+        print(f"Notifying {msg['assignedTo']} if subscribed:\n")
+        SUB_INBOX.notify(msg['assignedTo']) 
+
 
     channel.basic_consume(
         queue=queue_name, on_message_callback=callback, auto_ack=True)

@@ -1,9 +1,11 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, Response, request, jsonify
 from bson import ObjectId, json_util
 from pymongo.collection import Collection
 from datetime import datetime
 
 from app.models.subBillModel import SubBill, TAGS
+from app.controllers.subBillInputController import SUB_INBOX
+from app.controllers.subscriptionInboxController import User
 from app.db import DATABASE
 
 query_blueprint = Blueprint('query', __name__)
@@ -49,3 +51,38 @@ def fetch_subbill():
         return jsonify(res)
     except Exception as e:
         return f"An error occurred: {str(e)}", 400
+
+
+"""
+Basic SSE endpoint
+"""
+@query_blueprint.route('/stream_start', methods=['GET'])
+def stream_start():
+    user = request.args.get('user')
+    user_instance = User(user)
+    SUB_INBOX.addSubscriber(user_instance)
+    print(f"Start stream for {user}")
+    # Subscribe user to stream
+    def events():
+        try:
+            while True:
+                if user_instance.notify_client():
+                    yield f"data: Refresh, {user}\n\n"
+                if user_instance.connection_lost:
+                    raise Exception("Connection lost for {user}")
+        except:
+            print(f"End stream for {user}")
+    
+    return Response(events(), content_type='text/event-stream')
+
+@query_blueprint.route('/stream_end', methods=['GET'])
+def stream_end():
+    user = request.args.get('user')
+    user_instance = SUB_INBOX.findSubscriberByName(user)
+    if user_instance is not None:
+        SUB_INBOX.removeSubscriber(user_instance)
+        user_instance.mark_connection_lost()
+
+    return jsonify(None), 204
+
+    
