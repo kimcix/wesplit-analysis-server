@@ -3,6 +3,8 @@ from flask_cors import CORS
 from app.routes.analysis import analysis_blueprint
 from app.routes.query import query_blueprint
 
+from app.controllers.subBillInputController import consume
+
 def create_app():
     # Initialize Flask app
     app = Flask(__name__)
@@ -11,14 +13,8 @@ def create_app():
     app.register_blueprint(analysis_blueprint)
     app.register_blueprint(query_blueprint)
 
-    # Initialize Kafka consumer
-    """
-    kafka_consumer = KafkaConsumer(
-        app.config['KAFKA_TOPIC'],
-        bootstrap_servers=app.config['KAFKA_SERVERS'],
-        group_id=app.config['KAFKA_GROUP_ID']
-    )
-    """
+    # Initialize RabbitMQ consumer 
+    consume()
 
     # Return the Flask app
     return app
