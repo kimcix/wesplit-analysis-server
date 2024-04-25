@@ -33,8 +33,11 @@ def update_analytics():
             if res:
                 # Perform update messaging for relevant components
                 if document['analytics']['paid'] is not data['newPayment']['paid']:
-                    connection = pika.BlockingConnection(
-                        pika.ConnectionParameters(host='localhost'))
+                    # connection = pika.BlockingConnection(
+                    #     pika.ConnectionParameters(host='localhost'))
+                    rabbitmq_credentials = pika.PlainCredentials('guest', 'guest')
+                    rabbitmq_parameters = pika.ConnectionParameters('192.168.0.225', 5672, '/', rabbitmq_credentials)
+                    connection = pika.BlockingConnection(rabbitmq_parameters)
                     channel = connection.channel()
 
                     channel.exchange_declare(exchange='sda_mq', exchange_type='direct')

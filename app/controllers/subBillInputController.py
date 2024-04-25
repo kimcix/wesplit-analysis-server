@@ -4,8 +4,11 @@ from app.models.subBillModel import *
 from app.db import DATABASE
 
 def consume():
-    connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host='localhost'))
+    # connection = pika.BlockingConnection(
+    #     pika.ConnectionParameters(host='localhost'))
+    rabbitmq_credentials = pika.PlainCredentials('guest', 'guest')
+    rabbitmq_parameters = pika.ConnectionParameters('192.168.0.225', 5672, '/', rabbitmq_credentials)    
+    connection = pika.BlockingConnection(rabbitmq_parameters)
     channel = connection.channel()
 
     channel.exchange_declare(exchange='sda_mq', exchange_type='direct')
