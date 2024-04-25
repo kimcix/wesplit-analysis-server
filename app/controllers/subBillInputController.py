@@ -32,7 +32,7 @@ def consume():
                                'createAt': '2024-04-24T23:14:04.448116',
                                'assignedTo': '123', 'value': 33.33}
         """
-        newSubBill = SubBill(msg['masterBillId'], msg['masterBillName'], msg['assignedTo'], msg['creator'], msg['creatAt'],[], msg['value'])
+        newSubBill = SubBill(msg['masterBillId'], msg['masterBillName'], msg['assignedTo'], msg['creator'], msg['createAt'],[], msg['value'])
         newSubBill.setAnalytics()
         newSubBill.insertSubBill(DATABASE)
         # publish to subscribers

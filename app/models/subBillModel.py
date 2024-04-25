@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 
 from pymongo.collection import Collection
 from pymongo.database import Database
@@ -62,11 +62,11 @@ class SubBill():
 
     def __init__(self, master_bill_id, masterbill_name, user_name, creator, creation_time, item_list, total: float):
         self.subBillDocument = {
-            "masterbill":master_bill_id,
+            "masterbill":ObjectId(master_bill_id),
             "masterbill_name": masterbill_name,
             "user_name":user_name,
             "creator": creator,
-            "creation_time":creation_time,
+            "creation_time":datetime.strptime(creation_time, '%Y-%m-%dT%H:%M:%SZ'),
             "item_list":item_list,
             "total":total,
             "analytics": {
@@ -85,4 +85,4 @@ class SubBill():
 
     def insertSubBill(self,  db: Database):
         sub_bill_collection = Collection(db, "SubBill")
-        sub_bill_collection.insert_one(self.subBillDocument)
+        print(sub_bill_collection.insert_one(self.subBillDocument))

@@ -18,8 +18,10 @@ def date_query():
         end_date = datetime.strptime(request.args.get('end_date'), '%Y-%m-%d')
         username = request.args.get('user')
         
+        end_date_with_time = datetime.combine(end_date, datetime.max.time())
+
         # Convert to JSON response object
-        cursor = SubBill.fetchUserSubBillsByTime(DATABASE, username, start_date, end_date)
+        cursor = SubBill.fetchUserSubBillsByTime(DATABASE, username, start_date, end_date_with_time)
         json_data = json_util.dumps(list(cursor))
 
         return jsonify(json_data), 200
