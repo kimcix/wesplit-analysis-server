@@ -4,6 +4,22 @@ from pymongo.collection import Collection
 from pymongo.database import Database
 from bson import ObjectId
 
+"""
+subBillDocument = {
+            "masterbill":master_bill_id,
+            "masterbill_name": master_bill_name,
+            "user_name":user_name,
+            "creator": user_name,
+            "creation_time":creation_time,
+            "item_list":item_list,
+            "total":total,
+            "analytics": {
+                "paid":False,
+                "payment_time":None,
+                "payback_interval":None,
+                "tags":[]
+            }
+"""
 
 TAGS = ["food", "groceries", "rent", "bills", "entertainment"]
 
@@ -44,10 +60,12 @@ class SubBill():
             return True
         return False
 
-    def __init__(self, master_bill_id, user_name, creation_time, item_list, total: float):
+    def __init__(self, master_bill_id, masterbill_name, user_name, creator, creation_time, item_list, total: float):
         self.subBillDocument = {
             "masterbill":master_bill_id,
+            "masterbill_name": masterbill_name,
             "user_name":user_name,
+            "creator": creator,
             "creation_time":creation_time,
             "item_list":item_list,
             "total":total,

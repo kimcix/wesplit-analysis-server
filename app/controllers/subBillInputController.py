@@ -1,5 +1,6 @@
 import pika
 import json
+from app.models.subBillModel import *
 
 def consume():
     connection = pika.BlockingConnection(
@@ -21,9 +22,23 @@ def consume():
         msg = json.loads(body)
         print(f" [x] {method.routing_key}: {msg}")
 
+        #save_to_database
+        """
+        Message example (4/24/2024):
+        master_bill_creation: {'masterBillName': 'Split Bill',
+                               'masterBillId': '6629f4aca4b8026d9fe37e28',
+                               'creator': 'leoren',
+                               'createAt': '2024-04-24T23:14:04.448116',
+                               'assignedTo': '123', 'value': 33.33}
+        """
+        newSubBill = SubBill(msg['masterBillId'], msg['masterBillName'], msg['assignedTo'], msg['creator'], msg['creatAt'],[], msg['value'])
+        newSubBill.setAnalytics()
+        newSubBill.insertSubBill()
         # publish to subscribers
 
     channel.basic_consume(
         queue=queue_name, on_message_callback=callback, auto_ack=True)
-
+    
     channel.start_consuming()
+
+    return

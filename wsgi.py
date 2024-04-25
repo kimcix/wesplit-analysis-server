@@ -2,6 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from app.routes.analysis import analysis_blueprint
 from app.routes.query import query_blueprint
+from threading import Thread
 
 from app.controllers.subBillInputController import consume
 
@@ -14,11 +15,16 @@ def create_app():
     app.register_blueprint(query_blueprint)
 
     # Initialize RabbitMQ consumer 
-    consume()
+    # consume()
 
     # Return the Flask app
+    print("Successfully started Flask")
     return app
 
-if __name__ == "__main__":
-    # Create the Flask app
-    app = create_app()
+# Start app
+if __name__ == '__main__':
+    #consumer_thread = Thread(target=consume)
+    #consumer_thread.daemon = True
+    #consumer_thread.start()
+
+    app= create_app()
