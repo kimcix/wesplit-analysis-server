@@ -68,7 +68,7 @@ def update_analytics():
                         "value": document['total']
                     })
                     # TODO: Change the routing_key below
-                    channel.basic_publish(exchange='sda_mq', routing_key='subbill payment', body=message_one)
+                    channel.basic_publish(exchange='sda_mq', routing_key='subbill_payment', body=message_one)
                     print(f" [x] Sent message_one: {message_one}")
                         
                     connection.close()
