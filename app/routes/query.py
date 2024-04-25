@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from bson.json_util import dumps
+from bson import ObjectId
 from pymongo.collection import Collection
 
 from app.models.subBillModel import SubBill, TAGS
@@ -22,7 +22,7 @@ def fetch_subbill():
         subbill_id = request.args.get('subbill_id')
         
         subbill_collection = Collection(DATABASE, "SubBill")
-        res = subbill_collection.find_one({'_id': subbill_id})
+        res = subbill_collection.find_one({'_id': ObjectId(subbill_id)})
 
         return jsonify(res)
     except Exception as e:

@@ -1,6 +1,10 @@
 from flask import Blueprint, request, jsonify
-from bson.json_util import dumps
+from pymongo.collection import Collection
+from bson import ObjectId, json_util
 from datetime import datetime
+
+import pika
+import json
 
 from app.models.subBillModel import SubBill
 from app.db import DATABASE
@@ -21,7 +25,7 @@ def date_query():
         
         # Convert to JSON response object
         cursor = SubBill.fetchUserSubBillsByTime(DATABASE, username, start_date, end_date)
-        json_data = dumps(list(cursor))
+        json_data = json_util.dumps(list(cursor))
 
         return jsonify(json_data), 200
     except Exception as e:
@@ -39,12 +43,37 @@ def update_analytics():
         print("Received JSON data:")
         print(data)
 
-        # Querying the document with the given ID
-        
-        res = SubBill.updateSubBillTags(DATABASE, data['subBillId'], data['newTags'], data['newPayment'])
-        # Optionally, you can return a response to the client
-        if res:
-            return jsonify({"message": "Data received successfully"}), 200
+        # Get previous status for update messaging
+        subbill_collection = Collection(DATABASE, "SubBill")
+        document = subbill_collection.find_one({'_id': ObjectId(data['subBillId'])})
+
+        if document:
+            # Querying the document with the given ID
+            res = SubBill.updateSubBillTags(DATABASE, data['subBillId'], data['newTags'], data['newPayment'])
+
+            if res:
+                # Perform update messaging for relevant components
+                if document['analytics']['paid'] is not data['newPayment']['paid']:
+                    connection = pika.BlockingConnection(
+                        pika.ConnectionParameters(host='localhost'))
+                    channel = connection.channel()
+
+                    channel.exchange_declare(exchange='sda_mq', exchange_type='direct')
+                    print(data['newPayment'])
+                    # TODO: Change the message below
+                    message_one = json.dumps({
+                        "paid": data['newPayment']['paid'],
+                        "payee": document['creator'],
+                        "payer": document['user_name'],
+                        "value": document['total']
+                    })
+                    # TODO: Change the routing_key below
+                    channel.basic_publish(exchange='sda_mq', routing_key='subbill payment', body=message_one)
+                    print(f" [x] Sent message_one: {message_one}")
+                        
+                    connection.close()
+
+                return jsonify({"message": "Data received successfully"}), 200
     # If the request does not contain JSON data, return an error response
     return jsonify({"error": "Invalid JSON data"}), 400
 
@@ -83,7 +112,7 @@ def user_analysis():
             "total_accumulated": total,
             "total_owed": total_owed,
             "payback ratio": f"{paid_count}/{subbill_count}",
-            "average_payback_time": f"{payback_time_avg if payback_time_avg > 0.0 else "N/A"}"
+            "average_payback_time": f"{payback_time_avg if payback_time_avg > 0.0 else 'N/A'}"
         }
 
 
