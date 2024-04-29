@@ -64,10 +64,13 @@ def stream_start():
     print(f"Start stream for {user}")
     # Subscribe user to stream
     def events():
+        yield "data: ping\n\n"
         try:
             while True:
                 if user_instance.notify_client():
-                    yield f"data: Refresh, {user}\n\n"
+                    print(f"Notifying {user_instance.username}")
+                    yield f"data: reload\n\n"
+                
                 if user_instance.connection_lost:
                     raise Exception("Connection lost for {user}")
         except:

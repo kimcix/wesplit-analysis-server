@@ -31,11 +31,11 @@ class SubInbox():
     
     def addSubscriber(self, user: User):
         self.subscribers.add(user)
-        print(f"Added subscriber {user} to Set({self.subscribers})\n")
+        print(f"Added subscriber {user.username}, Set({','.join([user.username for user in self.subscribers])})\n")
     
     def removeSubscriber(self, user: User):
         self.subscribers.remove(user)
-        print(f"Removed subscriber {user} from Set({self.subscribers})\n")
+        print(f"Removed subscriber {user}, Set({','.join([user.username for user in self.subscribers])})\n")
     
     def findSubscriberByName(self, username):
         for subscriber in self.subscribers:
